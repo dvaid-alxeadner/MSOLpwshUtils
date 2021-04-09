@@ -6,11 +6,11 @@ try {
     # Connect To Office (Interactive Login)
     Connect-MsolService -Credential $userCredential
 
-    $UserMSOL=Get-MsolUser -UserPrincipalName $target -ErrorAction Stop
+    $UserMSO=Get-MsolUser -UserPrincipalName $target -ErrorAction Stop
     
-    if ($UserMSOL)
+    if ($UserMSO)
     {
-        $objectId=$UserMSOL.ObjectID
+        $objectId=$UserMSO.ObjectID
         if ($action -eq "E")
         {
             Write-Host "Enabling MFA for"$target" With ObjectID="$objectId
@@ -28,7 +28,7 @@ try {
         }
         elseif ($action -eq "Q")
         {
-            
+            Get-MsolUser -ObjectId $objectId | Select-Object @{N="Names"; E={$_.DisplayName -replace ",","-"}},Title,UserPrincipalName,BlockCredential,isLicensed,@{N="MFA Status"; E={ if( $_.StrongAuthenticationRequirements.State -ne $null){ $_.StrongAuthenticationRequirements.State} else { "Disabled"}}}
         }
         else {
             Write-Host "Invalid Input" 
